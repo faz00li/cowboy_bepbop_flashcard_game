@@ -7,12 +7,21 @@ import { Character } from './character.js';
 export class Board {
 
   constructor() {
+    this.gameStatus = false;
     this.chars = [];
     this.deck = [];
-    this.turns = 2;
+    this.maxClicks = 2;
     this.gameEnd = 6;
     this.numMatches = 0;
     this.numClicks = 0;
+
+  }
+
+  switchStatus() {
+    if (this.gameStatus)
+      this.gameStatus = false;
+    else
+      this.gameStatus = true;
   }
 
   addClick() {
@@ -25,8 +34,8 @@ export class Board {
     return this.numClicks;
   }
 
-  getTurns() {
-    return this.turns;
+  getMaxClicks() {
+    return this.maxClicks;
   }
 
   getCharacters() {

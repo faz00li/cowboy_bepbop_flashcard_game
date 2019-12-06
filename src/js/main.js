@@ -5,18 +5,26 @@ import { Board } from './board.js';
 // import { Card } from './card.js';
 // import { Character } from './character.js';
 
+var b = new Board();
+
+b.getCharacters();
+
 function populate(board) {
+
+  board.switchStatus();
+
   var i = 0, selector = "", html = "";
   board.deck.forEach(function(card){
     selector = `#${i}`;
     // console.log(selector);
-    html = `<div class="front cardId${card.getId()}"><img  src="${card.getPic()}"></div>`;
+    html = `<span class="front cardId${card.getId()}"><img  src="${card.getPic()}"></span>`;
     $(selector).prepend(html);
     i++;
   });
 }
 
 function flip(selectorFront, selectorBack) {
+  console.log(selectorFront + " " + selectorBack);
   $(selectorFront).show();
   $(selectorBack).hide();
 }
@@ -25,19 +33,74 @@ function updateClicks(board) {
   board.addClick();
 }
 
+function hideCards() {
+  $(".front").hide();
+  $(".back").show();
+}
+
 function endTurn(board) {
-  if (board.getClicks() == board.getTurns()) {
-    board.resetClicks();
-    $(".front").hide();
-    $(".back").show();
+  console.log("logging board: " + board + "num clicks" + board.numClicks);
+
+
+  if ( board.getClicks() == board.getMaxClicks() ) {
+    setTimeout(function(){hideCards();}, 1000);
+    setTimeout(function(){board.resetClicks();}, 1000);
+
+
   }
 
 }
 
+function getId(event) {
 
-var b = new Board();
+   if (b.getClicks() == 2)
+    return;
 
-b.getCharacters();
+  if (b.gameStatus == false)
+    return;
+
+  let target = event.target;
+  console.log(target);
+
+  // if (target.tagName === "SPAN")
+  //   return;
+
+  while (target.tagName != "DIV") {
+    target = target.parentNode;
+  }
+
+  var squareId = target.attributes.getNamedItem("id").value;
+  console.log(`${target.attributes} , ${squareId}`);
+
+
+  markCard(squareId);
+
+
+}
+
+function markCard(squareId) {
+
+  var selectorFront = `#${squareId} > .front`;
+  var selectorBack = `#${squareId} > .back`;
+
+  flip(selectorFront, selectorBack);
+  updateClicks(b);
+  endTurn(b);
+
+
+}
+
+// function markCard(target) {
+//   var card = target;
+//   var selectorFront = `#${card} > .front`;
+//   var selectorBack = `#${card} > .back`;
+//
+//   flip(selectorFront, selectorBack);
+//   updateClicks(b);
+//   endTurn(b);
+// }
+
+
 
 
 
@@ -52,42 +115,19 @@ $('#getCards').click(function() {
 
 $(document).ready(function() {
 
-  $('.col-sm').click(function(event){
-    var card = event.target.id;
-    var selectorFront = `#${card} > .front`;
-    var selectorBack = `#${card} > .back`;
-
-    flip(selectorFront, selectorBack);
-    updateClicks(b);
-    endTurn(b);
+  $('.col-sm').click({param1: b,}, getId);
+  // $('.col-sm').click({param1: b,}, endTurn);
+  // $('.col-sm').mouseleave(function() {
+  //   endTurn(b);
+  // });
 
 
+  // console.log("origninal numClicks: " + numberOfClicks);
+  // console.log("cardId: " + card);
+  // console.log("click --> front selector: " + selectorFront);
+  // console.log("click --> back selector: " + selectorBack);
 
-
-    //
-    // console.log("origninal numClicks: " + numberOfClicks);
-    // console.log("cardId: " + card);
-    // console.log("click --> front selector: " + selectorFront);
-    // console.log("click --> back selector: " + selectorBack);
-
-
-
-
-  });
-
-
-
-
-  // $('.front').click(function(event) {
-  // //   var card =
+    // //   var card =
   // });
 
 });
-
-
-//     //populate(b.createBoard());
-//
-//     //attach event handlers to cells
-//
-//     //until numMatches === 0 take turns
-//
